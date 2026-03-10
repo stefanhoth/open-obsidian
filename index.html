@@ -156,6 +156,12 @@
                 
                 // Attempt automatic redirect
                 window.location.href = obsidianUrl;
+
+                // Attempt to close the tab after a short delay
+                // Note: This only works if the tab was opened by a script (e.g. from an app)
+                setTimeout(() => {
+                    window.close();
+                }, 1000);
             } else {
                 contentDiv.innerHTML = `
                     <h1 class="error">Invalid URL</h1>
