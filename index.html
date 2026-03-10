@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opening Obsidian...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        .link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #7c4dff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .link:hover {
+            background-color: #651fff;
+        }
+        .error {
+            color: #d32f2f;
+        }
+        #url-display {
+            display: block;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="content">
+        <h1>Opening Obsidian...</h1>
+        <p>You are being redirected to your Obsidian vault.</p>
+        <a id="redirect-link" href="#" class="link">Open Obsidian manually</a>
+        <code id="url-display"></code>
+    </div>
+
+    <script>
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        const obsidianUrl = getQueryParam('url');
+        const contentDiv = document.getElementById('content');
+        const redirectLink = document.getElementById('redirect-link');
+        const urlDisplay = document.getElementById('url-display');
+
+        if (obsidianUrl) {
+            if (obsidianUrl.startsWith('obsidian://')) {
+                redirectLink.href = obsidianUrl;
+                urlDisplay.textContent = obsidianUrl;
+                
+                // Attempt automatic redirect
+                window.location.href = obsidianUrl;
+                
+                // Fallback: If the redirect doesn't happen immediately, 
+                // the user can still click the manual link.
+            } else {
+                contentDiv.innerHTML = `
+                    <h1 class="error">Invalid URL</h1>
+                    <p>The provided URL is not a valid Obsidian URI scheme.</p>
+                    <code>${obsidianUrl}</code>
+                `;
+            }
+        } else {
+            contentDiv.innerHTML = `
+                <h1>Obsidian Redirector</h1>
+                <p>No Obsidian URI provided. Use the <code>?url=</code> parameter to specify a URI.</p>
+                <p>Example: <code>?url=obsidian://open?vault=myvault&file=myfile</code></p>
+            `;
+        }
+    </script>
+</body>
+</html>
