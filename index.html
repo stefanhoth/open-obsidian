@@ -66,12 +66,19 @@
     </div>
 
     <script>
-        function getQueryParam(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+        function getObsidianUrl() {
+            // We use this manual parsing because URLSearchParams will stop at the first '&'
+            // which might be part of the obsidian:// URI if it's not double-encoded.
+            const search = window.location.search;
+            const key = 'url=';
+            const index = search.indexOf(key);
+            if (index !== -1) {
+                return decodeURIComponent(search.substring(index + key.length));
+            }
+            return null;
         }
 
-        const obsidianUrl = getQueryParam('url');
+        const obsidianUrl = getObsidianUrl();
         const contentDiv = document.getElementById('content');
         const redirectLink = document.getElementById('redirect-link');
         const urlDisplay = document.getElementById('url-display');
