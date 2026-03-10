@@ -179,6 +179,11 @@
                     <label for="file">File Path</label>
                     <input type="text" id="file" placeholder="e.g. Daily Notes/2026-03-10">
                 </div>
+
+                <div class="form-group" style="display: flex; align-items: center;">
+                    <input type="checkbox" id="new-tab" checked style="width: auto; margin-right: 0.75rem;">
+                    <label for="new-tab" style="margin-bottom: 0; cursor: pointer;">Open note in a new tab</label>
+                </div>
                 
                 <button id="generate-btn" class="button">Generate & Open</button>
                 
@@ -192,6 +197,7 @@
 
             const vaultInput = document.getElementById('vault');
             const fileInput = document.getElementById('file');
+            const newTabCheckbox = document.getElementById('new-tab');
             const generateBtn = document.getElementById('generate-btn');
             const previewUri = document.getElementById('preview-uri');
             const previewRedirect = document.getElementById('preview-redirect');
@@ -202,7 +208,7 @@
                 const file = encodeURIComponent(fileInput.value || '');
                 let uri = `obsidian://open?vault=${vault}`;
                 if (file) uri += `&file=${file}`;
-                uri += `&paneType=tab`;
+                if (newTabCheckbox.checked) uri += `&paneType=tab`;
                 
                 previewUri.textContent = uri;
                 
@@ -213,6 +219,7 @@
 
             vaultInput.addEventListener('input', updatePreview);
             fileInput.addEventListener('input', updatePreview);
+            newTabCheckbox.addEventListener('change', updatePreview);
             
             generateBtn.addEventListener('click', () => {
                 const uri = updatePreview();
