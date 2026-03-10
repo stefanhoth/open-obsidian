@@ -172,7 +172,7 @@
                 
                 <div class="form-group">
                     <label for="vault">Vault Name</label>
-                    <input type="text" id="vault" placeholder="e.g. openclaw" value="openclaw">
+                    <input type="text" id="vault" placeholder="e.g. my-vault">
                 </div>
                 
                 <div class="form-group">
@@ -184,7 +184,7 @@
                 
                 <div class="preview">
                     <span>Preview URI:</span>
-                    <code id="preview-uri">obsidian://open?vault=openclaw&paneType=tab</code>
+                    <code id="preview-uri">obsidian://open?vault=&paneType=tab</code>
                     <span style="display:block; margin-top: 0.5rem;">Redirect URL:</span>
                     <code id="preview-redirect">...</code>
                 </div>
@@ -197,7 +197,8 @@
             const previewRedirect = document.getElementById('preview-redirect');
 
             function updatePreview() {
-                const vault = encodeURIComponent(vaultInput.value || '');
+                const vaultValue = vaultInput.value || '';
+                const vault = encodeURIComponent(vaultValue);
                 const file = encodeURIComponent(fileInput.value || '');
                 let uri = `obsidian://open?vault=${vault}`;
                 if (file) uri += `&file=${file}`;
