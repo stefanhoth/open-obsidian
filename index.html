@@ -3,109 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opening Obsidian...</title>
+    <title>Obsidian Redirector</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             background-color: #f4f4f9;
             color: #333;
         }
         .container {
             text-align: center;
-            padding: 2rem;
+            padding: 2.5rem;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
             width: 90%;
         }
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             margin-bottom: 1rem;
+            color: #1a1a1a;
         }
         p {
             margin-bottom: 1.5rem;
-            line-height: 1.5;
+            line-height: 1.6;
+            color: #4b5563;
         }
         .link {
             display: inline-block;
-            padding: 0.75rem 1.5rem;
+            padding: 0.875rem 1.75rem;
             background-color: #7c4dff;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            transition: background-color 0.2s;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
         }
         .link:hover {
             background-color: #651fff;
+            transform: translateY(-1px);
         }
         .error {
-            color: #d32f2f;
+            color: #dc2626;
         }
         #url-display {
             display: block;
-            margin-top: 1rem;
-            font-size: 0.8rem;
-            color: #666;
+            margin-top: 1.5rem;
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: #4b5563;
+            word-break: break-all;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.25rem;
+        }
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        input {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #7c4dff;
+            box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.1);
+        }
+        .button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #7c4dff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .button:hover {
+            background-color: #651fff;
+        }
+        .preview {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: left;
+        }
+        .preview code {
+            display: block;
+            margin-top: 0.25rem;
+            padding: 0.5rem;
+            background: #f3f4f6;
+            border-radius: 4px;
             word-break: break-all;
         }
     </style>
 </head>
 <body>
     <div class="container" id="content">
-        <h1>Opening Obsidian...</h1>
-        <p>You are being redirected to your Obsidian vault.</p>
-        <a id="redirect-link" href="#" class="link">Open Obsidian manually</a>
-        <code id="url-display"></code>
+        <!-- Content will be injected here by JavaScript -->
+        <h1>Loading...</h1>
     </div>
 
     <script>
         function getObsidianUrl() {
-            // We use this manual parsing because URLSearchParams will stop at the first '&'
-            // which might be part of the obsidian:// URI if it's not double-encoded.
             const search = window.location.search;
             const key = 'url=';
             const index = search.indexOf(key);
             if (index !== -1) {
-                return decodeURIComponent(search.substring(index + key.length));
+                let url = decodeURIComponent(search.substring(index + key.length));
+                // Add paneType=tab or newpane=true if not present
+                if (!url.includes('paneType=') && !url.includes('newpane=')) {
+                    const separator = url.includes('?') ? '&' : '?';
+                    url += `${separator}paneType=tab`;
+                }
+                return url;
             }
             return null;
         }
 
         const obsidianUrl = getObsidianUrl();
         const contentDiv = document.getElementById('content');
-        const redirectLink = document.getElementById('redirect-link');
-        const urlDisplay = document.getElementById('url-display');
 
         if (obsidianUrl) {
             if (obsidianUrl.startsWith('obsidian://')) {
-                redirectLink.href = obsidianUrl;
-                urlDisplay.textContent = obsidianUrl;
+                contentDiv.innerHTML = `
+                    <h1>Opening Obsidian...</h1>
+                    <p>You are being redirected to your Obsidian vault.</p>
+                    <a id="redirect-link" href="${obsidianUrl}" class="link">Open Obsidian manually</a>
+                    <code id="url-display">${obsidianUrl}</code>
+                `;
                 
                 // Attempt automatic redirect
                 window.location.href = obsidianUrl;
-                
-                // Fallback: If the redirect doesn't happen immediately, 
-                // the user can still click the manual link.
             } else {
                 contentDiv.innerHTML = `
                     <h1 class="error">Invalid URL</h1>
                     <p>The provided URL is not a valid Obsidian URI scheme.</p>
-                    <code>${obsidianUrl}</code>
+                    <code id="url-display">${obsidianUrl}</code>
+                    <p style="margin-top: 1.5rem;"><a href="?" class="link" style="background-color: #6b7280;">Go back</a></p>
                 `;
             }
         } else {
+            // Empty state: Generator UI
             contentDiv.innerHTML = `
-                <h1>Obsidian Redirector</h1>
-                <p>No Obsidian URI provided. Use the <code>?url=</code> parameter to specify a URI.</p>
-                <p>Example: <code>?url=obsidian://open?vault=myvault&file=myfile</code></p>
+                <h1>Obsidian Link Generator</h1>
+                <p>Enter your details to generate an Obsidian link and redirect immediately.</p>
+                
+                <div class="form-group">
+                    <label for="vault">Vault Name</label>
+                    <input type="text" id="vault" placeholder="e.g. openclaw" value="openclaw">
+                </div>
+                
+                <div class="form-group">
+                    <label for="file">File Path</label>
+                    <input type="text" id="file" placeholder="e.g. Daily Notes/2026-03-10">
+                </div>
+                
+                <button id="generate-btn" class="button">Generate & Open</button>
+                
+                <div class="preview">
+                    <span>Preview URI:</span>
+                    <code id="preview-uri">obsidian://open?vault=openclaw&paneType=tab</code>
+                    <span style="display:block; margin-top: 0.5rem;">Redirect URL:</span>
+                    <code id="preview-redirect">...</code>
+                </div>
             `;
+
+            const vaultInput = document.getElementById('vault');
+            const fileInput = document.getElementById('file');
+            const generateBtn = document.getElementById('generate-btn');
+            const previewUri = document.getElementById('preview-uri');
+            const previewRedirect = document.getElementById('preview-redirect');
+
+            function updatePreview() {
+                const vault = encodeURIComponent(vaultInput.value || '');
+                const file = encodeURIComponent(fileInput.value || '');
+                let uri = `obsidian://open?vault=${vault}`;
+                if (file) uri += `&file=${file}`;
+                uri += `&paneType=tab`;
+                
+                previewUri.textContent = uri;
+                
+                const baseUrl = window.location.origin + window.location.pathname;
+                previewRedirect.textContent = `${baseUrl}?url=${encodeURIComponent(uri)}`;
+                return uri;
+            }
+
+            vaultInput.addEventListener('input', updatePreview);
+            fileInput.addEventListener('input', updatePreview);
+            
+            generateBtn.addEventListener('click', () => {
+                const uri = updatePreview();
+                window.location.href = uri;
+            });
+
+            updatePreview();
         }
     </script>
 </body>
