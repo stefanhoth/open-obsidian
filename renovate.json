@@ -1,0 +1,44 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "schedule": [
+    "before 7am on Monday"
+  ],
+  "timezone": "Europe/Berlin",
+  "labels": [
+    "dependencies"
+  ],
+  "packageRules": [
+    {
+      "description": "wrangler-action's `wranglerVersion: ${{ env.WRANGLER_VERSION }}` is not a version; the custom manager below handles the real pin",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepTypes": [
+        "uses-with"
+      ],
+      "matchPackageNames": [
+        "wrangler"
+      ],
+      "enabled": false
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Wrangler CLI version, pinned in the deploy workflow and the wrangler.jsonc $schema URL — updated together in one PR",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.*\\.ya?ml$/",
+        "/^wrangler\\.jsonc$/"
+      ],
+      "matchStrings": [
+        "WRANGLER_VERSION: '(?<currentValue>[^']+)'",
+        "unpkg\\.com/wrangler@(?<currentValue>[^/]+)/config-schema\\.json"
+      ],
+      "depNameTemplate": "wrangler",
+      "datasourceTemplate": "npm"
+    }
+  ]
+}
