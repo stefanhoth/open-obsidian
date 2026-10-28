@@ -38,4 +38,4 @@ Hosted on Cloudflare Workers (static assets from `public/`) at [open-obsidian.st
 
 Required repository secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 
-The root `index.html` is kept for the old GitHub Pages URL (`stefanhoth.github.io/open-obsidian/`) and forwards existing links, including their `?url=` parameter, to the new domain.
+The old GitHub Pages URL (`stefanhoth.github.io/open-obsidian/`) is served from the orphan `gh-pages` branch, which only contains a redirect page. It forwards existing links, including their `?url=` parameter, to the new domain. GitHub Pages cannot send a real HTTP 301, so this is an instant client-side redirect with a canonical link.
