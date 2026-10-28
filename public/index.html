@@ -150,9 +150,12 @@
                 contentDiv.innerHTML = `
                     <h1>Opening Obsidian...</h1>
                     <p>You are being redirected to your Obsidian vault.</p>
-                    <a id="redirect-link" href="${obsidianUrl}" class="link">Open Obsidian manually</a>
-                    <code id="url-display">${obsidianUrl}</code>
+                    <a id="redirect-link" class="link">Open Obsidian manually</a>
+                    <code id="url-display"></code>
                 `;
+                // Set user-controlled values via DOM properties, never as HTML (prevents XSS)
+                document.getElementById('redirect-link').href = obsidianUrl;
+                document.getElementById('url-display').textContent = obsidianUrl;
                 
                 // Attempt automatic redirect
                 window.location.href = obsidianUrl;
@@ -166,9 +169,10 @@
                 contentDiv.innerHTML = `
                     <h1 class="error">Invalid URL</h1>
                     <p>The provided URL is not a valid Obsidian URI scheme.</p>
-                    <code id="url-display">${obsidianUrl}</code>
+                    <code id="url-display"></code>
                     <p style="margin-top: 1.5rem;"><a href="?" class="link" style="background-color: #6b7280;">Go back</a></p>
                 `;
+                document.getElementById('url-display').textContent = obsidianUrl;
             }
         } else {
             // Empty state: Generator UI
