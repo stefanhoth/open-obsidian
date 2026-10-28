@@ -1,0 +1,66 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  WRANGLER_VERSION: '4.154.0'
+
+jobs:
+  # ── Production deploy to Cloudflare Workers ────────────────────────────────
+  deploy:
+    name: Deploy to Cloudflare Workers
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy
+      cancel-in-progress: true
+    environment:
+      name: production
+      url: https://open-obsidian.stefanhoth.com
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+  # ── PR preview (pr-<N> alias on workers.dev) ───────────────────────────────
+  preview:
+    name: Deploy preview
+    # Fork PRs have no access to the Cloudflare secrets.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    concurrency:
+      group: preview-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Upload preview version
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          wranglerVersion: ${{ env.WRANGLER_VERSION }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: versions upload --preview-alias pr-${{ github.event.number }}
+
+      - name: Show preview URL
+        env:
+          WRANGLER_OUTPUT: ${{ steps.deploy.outputs.command-output }}
+        run: |
+          # The alias URL only appears once a production deploy with
+          # preview_urls: true has run (see starlog's preview-deploy.yml).
+          PREVIEW_URL=$(echo "$WRANGLER_OUTPUT" | grep -oE 'Version Preview Alias URL: https://\S+' | sed 's/^Version Preview Alias URL: //' || true)
+          echo "### Preview: ${PREVIEW_URL:-not available yet}" >> "$GITHUB_STEP_SUMMARY"
