@@ -29,6 +29,14 @@ Append `?url=` followed by an encoded Obsidian URI to the base URL.
 
 If you visit the base URL without any parameters, you can use the built-in generator to create these links easily.
 
+## Agent skill
+
+`skills/open-obsidian/SKILL.md` teaches AI agents to build these links. It also covers how to combine it with the [obsidian-cli](https://github.com/kepano/obsidian-skills) skill, which looks up the vault name and note path. Install it with [`npx skills`](https://github.com/vercel-labs/skills):
+
+```bash
+npx skills add stefanhoth/open-obsidian
+```
+
 ## Deployment
 
 Hosted on Cloudflare Workers (static assets from `public/`) at [open-obsidian.stefanhoth.com](https://open-obsidian.stefanhoth.com).
