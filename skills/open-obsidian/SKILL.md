@@ -22,7 +22,7 @@ Never "open" a note for yourself through this website, because it only redirects
 1. Build the Obsidian URI and percent-encode each parameter value:
    `obsidian://open?vault=<vault>&file=<path from vault root, .md optional>`
 2. Percent-encode the **whole** URI once more and append it after `?url=`.
-3. `url` must be the only (or last) query parameter: the page takes everything after `url=` and decodes it once.
+3. `url` must be the last query parameter: the page takes everything after `url=` and decodes it once.
 
 ```bash
 python3 -c 'import sys,urllib.parse as u; q=lambda s:u.quote(s,safe=""); print("https://open-obsidian.stefanhoth.com/?url="+q(f"obsidian://open?vault={q(sys.argv[1])}&file={q(sys.argv[2])}"))' "My Vault" "Daily Notes/2026-03-10"
@@ -36,6 +36,7 @@ const link = `https://open-obsidian.stefanhoth.com/?url=${q(`obsidian://open?vau
 
 Notes:
 - The note opens in a **new tab** by default (`paneType=tab` is added). To control this, set `paneType=tab|split|window` (or `newpane=…`) in the Obsidian URI yourself.
+- The page does **not** close its tab by default, so first-time users can tick the browser's "always allow" checkbox. Only add `autoclose=1&` before `url=` (`…/?autoclose=1&url=…`) when the user asks for it or has already set up "always allow". It only works for tabs opened by a script.
 - Headings and blocks: append `#Heading` or `#^block-id` to the `file` value *before* encoding (`Note#Heading` → `Note%23Heading`).
 - Other URI actions work too, e.g. `obsidian://daily?vault=…` or `obsidian://search?vault=…&query=…`. The page only checks that the target starts with `obsidian://`.
 
