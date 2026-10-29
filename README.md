@@ -25,6 +25,12 @@ Append `?url=` followed by an encoded Obsidian URI to the base URL.
 
 *(Note: The `&` in the Obsidian URI should be encoded as `%26` to ensure it's captured as part of the `url` parameter.)*
 
+### Auto-close
+
+The redirect page stays open by default, so first-time users can tick the browser's "always allow" checkbox. Add `autoclose=1&` before `url=` to close the tab after one second (works only for tabs opened by a script):
+
+`https://open-obsidian.stefanhoth.com/?autoclose=1&url=…`
+
 ## Generator
 
 If you visit the base URL without any parameters, you can use the built-in generator to create these links easily.
